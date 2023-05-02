@@ -13,6 +13,13 @@ class TasksListSerializer(serializers.ModelSerializer):
         fields = ['uuid', 'name', 'created_at']
 
 
+class TaskRetrieveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TaskResult
+        # fields = ['uuid', 'name', 'created_at']
+        fields = '__all__'
+
+
 class OptionsSerializer(serializers.Serializer):
     retry = serializers.IntegerField(validators=[MinValueValidator(0)])
     delay = serializers.IntegerField(validators=[MinValueValidator(0)])

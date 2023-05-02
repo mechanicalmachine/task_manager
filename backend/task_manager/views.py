@@ -1,13 +1,14 @@
-from rest_framework import viewsets
-from rest_framework.generics import ListAPIView
+from rest_framework.mixins import RetrieveModelMixin, ListModelMixin, CreateModelMixin
 from rest_framework.permissions import IsAuthenticated
 
 from django_celery_results.models import TaskResult
-from task_manager.serializers import TasksListSerializer, CreateTaskSerializer
+from rest_framework.viewsets import GenericViewSet
+
+from task_manager.serializers import TasksListSerializer, CreateTaskSerializer, TaskRetrieveSerializer
 
 
-class TaskViewSet(ListAPIView, viewsets.ModelViewSet):
-    serializer_class = TasksListSerializer
+class TaskViewSet(ListModelMixin, RetrieveModelMixin, CreateModelMixin, GenericViewSet):
+    lookup_field = "task_id"
     permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
@@ -15,6 +16,8 @@ class TaskViewSet(ListAPIView, viewsets.ModelViewSet):
             return TasksListSerializer
         elif self.action == "create":
             return CreateTaskSerializer
+        elif self.action == "retrieve":
+            return TaskRetrieveSerializer
 
     def get_queryset(self):
         queryset = TaskResult.objects.all()

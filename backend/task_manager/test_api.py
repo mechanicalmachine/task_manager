@@ -52,3 +52,19 @@ class TestFooBarViewSet:
 
         assert r.status_code == 200
         assert len(r.json()) == 5
+
+    def test_retrieve_task(self, task_factory):
+        # TODO move to setup or to factory
+        self.user = User.objects.create_user(
+            username="test", password="top_secret"
+        )
+        token = Token.objects.get(user__username='test')
+
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+
+        task = task_factory()
+
+        r = client.get(f"{self.URL}/{task.task_id}", format='json')
+
+        assert r.status_code == 200

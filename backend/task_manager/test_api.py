@@ -6,7 +6,7 @@ from rest_framework.authtoken.models import Token
 
 @pytest.mark.django_db
 class TestFooBarViewSet:
-    URL = "/task/"
+    URL = "/task"
 
     def test_create_task(self):
         # TODO move to setup or to factory
@@ -17,8 +17,20 @@ class TestFooBarViewSet:
 
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
-        r = client.post(self.URL, {'name': 'test'})
-        assert 201 == r.status_code
+
+        data = {
+            "name": "test",
+            "params": {
+                "param1": "some param",
+                "param2": "some another param",
+            },
+            "options": {
+                "retry": 2,
+                "delay": 3000,
+            }
+        }
+        r = client.post(self.URL, data=data, format='json')
+        assert r.status_code == 201
 
     def test_tasks_list(self, task_factory):
         # TODO move to setup or to factory

@@ -14,10 +14,36 @@ class TasksListSerializer(serializers.ModelSerializer):
 
 
 class TaskRetrieveSerializer(serializers.ModelSerializer):
+    uuid = serializers.CharField(source="task_id")
+    status = serializers.SerializerMethodField()
+
     class Meta:
         model = TaskResult
-        # fields = ['uuid', 'name', 'created_at']
-        fields = '__all__'
+        fields = ['uuid', 'status', "result", "traceback", "date_done"]
+
+    def get_status(self, obj: TaskResult) -> str:
+        status_mapping = {
+            "PENDING": "PENDING",
+            "RECEIVED": "PENDING",
+            "STARTED": "IN_PROGRESS",
+            "SUCCESS": "COMPLETED",
+            "FAILURE": "FAILED",
+            "RETRY": "RETRY_PENDING",
+            "REVOKED": "CANCELLED"
+        }
+        return status_mapping.get(obj.status)
+
+    def to_representation(self, instance: TaskResult):
+        data = super().to_representation(instance)
+
+        if instance.status in ("PENDING", "RECEIVED", "STARTED"):
+            data.pop("date_done")
+        if instance.status != "SUCCESS":
+            data.pop("result")
+        if instance.status not in ("FAILURE", "RETRY"):
+            data.pop("traceback")
+
+        return data
 
 
 class OptionsSerializer(serializers.Serializer):

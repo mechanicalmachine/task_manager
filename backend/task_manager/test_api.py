@@ -63,8 +63,9 @@ class TestFooBarViewSet:
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
 
-        task = task_factory()
+        task = task_factory(status="SUCCESS")
 
         r = client.get(f"{self.URL}/{task.task_id}", format='json')
 
         assert r.status_code == 200
+        assert r.json()["status"] == "COMPLETED"

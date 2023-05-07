@@ -85,6 +85,12 @@ DATABASES = {
     }
 }
 
+CELERY_BROKER_URL = 'redis://localhost:6379/10'  # URL Redis
+CELERY_RESULT_BACKEND = 'task_manager.result_backend.ExtendedTaskResultBackend'
+CELERY_TASK_TRACK_STARTED = True
+CELERY_RESULT_PERSISTENT = True
+CELERY_IGNORE_RESULT = False
+CELERY_RESULT_EXTENDED = True
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

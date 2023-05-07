@@ -11,9 +11,9 @@ def cancel_tasks(modeladmin, request, queryset):
     app.control.revoke(tasks_id_to_cancel, terminate=True)
 
 
-class ArticleAdmin(TaskResultAdmin):
+class ExtendedTaskResultAdmin(TaskResultAdmin):
     actions = [cancel_tasks]
 
 
 admin.site.unregister(TaskResult)
-admin.site.register(TaskResult, ArticleAdmin)
+admin.site.register(TaskResult, ExtendedTaskResultAdmin)

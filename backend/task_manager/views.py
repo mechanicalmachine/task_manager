@@ -1,4 +1,4 @@
-from rest_framework.mixins import RetrieveModelMixin, ListModelMixin, CreateModelMixin
+from rest_framework.mixins import RetrieveModelMixin, ListModelMixin, CreateModelMixin, DestroyModelMixin
 from rest_framework.permissions import IsAuthenticated
 
 from django_celery_results.models import TaskResult
@@ -7,7 +7,7 @@ from rest_framework.viewsets import GenericViewSet
 from task_manager.serializers import TasksListSerializer, CreateTaskSerializer, TaskRetrieveSerializer
 
 
-class TaskViewSet(ListModelMixin, RetrieveModelMixin, CreateModelMixin, GenericViewSet):
+class TaskViewSet(DestroyModelMixin, ListModelMixin, RetrieveModelMixin, CreateModelMixin, GenericViewSet):
     lookup_field = "task_id"
     permission_classes = [IsAuthenticated]
 
@@ -26,3 +26,5 @@ class TaskViewSet(ListModelMixin, RetrieveModelMixin, CreateModelMixin, GenericV
             queryset = queryset.filter(task_name=task_name)
         return queryset
 
+    def perform_destroy(self, instance):
+        app.control.revoke(instance.task_id, terminate=True)

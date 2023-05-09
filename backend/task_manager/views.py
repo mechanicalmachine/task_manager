@@ -1,3 +1,4 @@
+from celery import signature
 from rest_framework.mixins import RetrieveModelMixin, ListModelMixin, CreateModelMixin, DestroyModelMixin
 from rest_framework.permissions import IsAuthenticated
 
@@ -25,6 +26,16 @@ class TaskViewSet(DestroyModelMixin, ListModelMixin, RetrieveModelMixin, CreateM
         if task_name is not None:
             queryset = queryset.filter(task_name=task_name)
         return queryset
+
+    def perform_create(self, serializer):
+        data = serializer.data
+        task_signature = signature(data.pop("name"))
+        result = task_signature.apply_async(**data)
+        instance = TaskResult.objects.store_result(
+            'application/json', 'utf-8', result.id, result, result.status, task_name=serializer.data["name"]
+        )
+        assign_perm("view_taskresult", self.request.user, instance)
+        assign_perm("delete_taskresult", self.request.user, instance)
 
     def perform_destroy(self, instance):
         app.control.revoke(instance.task_id, terminate=True)

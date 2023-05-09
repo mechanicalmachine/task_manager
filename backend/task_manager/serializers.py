@@ -51,11 +51,16 @@ class OptionsSerializer(serializers.Serializer):
     delay = serializers.IntegerField(validators=[MinValueValidator(0)])
 
 
-class CreateTaskSerializer(serializers.ModelSerializer):
+class CreateTaskSerializer(serializers.Serializer):
     name = serializers.CharField(source='task_name', max_length=255)
-    params = serializers.JSONField(source='task_kwargs', required=False)
-    options = OptionsSerializer(source='meta', required=False)
+    params = serializers.JSONField(required=False)
+    options = serializers.JSONField(required=False)
 
-    class Meta:
-        model = TaskResult
-        fields = ['name', 'params', 'options']
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data["kwargs"] = {}
+        if "params" in data:
+            data["kwargs"].update(data.pop("params"))
+        if "options" in data:
+            data["kwargs"].update(data.pop("options"))
+        return data

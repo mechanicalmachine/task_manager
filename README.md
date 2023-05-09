@@ -1,6 +1,16 @@
 # task_manager
 Simple app for managing background tasks via API.
 
+## Installation
+
+- Pull code to you machine
+- Install requirements: `pip install -r requirements.txt`
+- Make migrations: `python manage.py migrate`
+- Run message broker: `docker-compose up -d`
+- Run server: `python manage.py migrate`
+- Create superuser: `python manage.py createsuperuser`
+- Open admin site in browser: `http://127.0.0.1:8000/admin`
+- Use api methods as at explained further
 
 ## Examples
 

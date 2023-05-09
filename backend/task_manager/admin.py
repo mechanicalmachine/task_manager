@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django_celery_results.admin import TaskResultAdmin
 from django_celery_results.models import TaskResult
+from guardian.admin import GuardedModelAdmin
 
 from backend.celery import app
 
@@ -11,7 +12,7 @@ def cancel_tasks(modeladmin, request, queryset):
     app.control.revoke(tasks_id_to_cancel, terminate=True)
 
 
-class ExtendedTaskResultAdmin(TaskResultAdmin):
+class ExtendedTaskResultAdmin(TaskResultAdmin, GuardedModelAdmin):
     actions = [cancel_tasks]
 
 

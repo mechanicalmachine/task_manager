@@ -1,16 +1,20 @@
 from celery import signature
+from guardian.shortcuts import get_objects_for_user, assign_perm
+from rest_framework import status
 from rest_framework.mixins import RetrieveModelMixin, ListModelMixin, CreateModelMixin, DestroyModelMixin
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import DjangoObjectPermissions
 
 from django_celery_results.models import TaskResult
+from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from backend.celery import app
 from task_manager.serializers import TasksListSerializer, CreateTaskSerializer, TaskRetrieveSerializer
 
 
 class TaskViewSet(DestroyModelMixin, ListModelMixin, RetrieveModelMixin, CreateModelMixin, GenericViewSet):
     lookup_field = "task_id"
-    permission_classes = [IsAuthenticated]
+    permission_classes = [DjangoObjectPermissions]
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -21,7 +25,7 @@ class TaskViewSet(DestroyModelMixin, ListModelMixin, RetrieveModelMixin, CreateM
             return TaskRetrieveSerializer
 
     def get_queryset(self):
-        queryset = TaskResult.objects.all()
+        queryset = get_objects_for_user(self.request.user, 'view_object', klass=TaskResult)
         task_name = self.request.query_params.get('name')
         if task_name is not None:
             queryset = queryset.filter(task_name=task_name)

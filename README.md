@@ -14,7 +14,7 @@ Simple app for managing background tasks via API.
 
 ## Examples
 
-First, you need to create a user. You can yse management command or admin site for that.
+First, you need to create a user. You can use management command or admin site for that.
 Then you can find user token in admin site. You should use this token for all requests.
 
 NOTE: as a task name you should pass task reference like `task_manager.tasks.task_one` not just a task name.

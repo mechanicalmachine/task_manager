@@ -1,5 +1,51 @@
 # task_manager
+Simple app for managing background tasks via API.
 
-добавить курлов
-добавить инфу о том, что надо передавать не имя таски, а референс
+
+## Examples
+
+First, you need to create a user. You can yse management command or admin site for that.
+Then you can find user token in admin site. You should use this token for all requests.
+
+NOTE: as a task name you should pass task reference like `task_manager.tasks.task_one` not just a task name.
+
+For task creation you can use following curl request:
+```bash
+curl --location --request POST 'http://127.0.0.1:8000/tasks/' \
+  --header 'Authorization: Token YOUR-TOKEN}' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+    "name": "task_manager.tasks.task_one",
+    "params": {
+        "param1": 1,
+        "param2": 2
+    },
+    "options": {
+        "retry": 200,
+        "delay": 1
+    }
+}'
+```
+
+For retrieving tasks list based on their name you can use following curl request:
+```bash
+curl --location --request GET 'http://127.0.0.1:8000/tasks?name=task_manager.tasks.task_one' \
+  --header 'Authorization: Token YOUR-TOKEN' \
+  --header 'Content-Type: application/json'
+```
+
+For task retrieving you can use following curl request:
+```bash
+curl --location --request GET 'http://127.0.0.1:8000/tasks/{task_id}' \
+  --header 'Authorization: Token YOUR-TOKEN' \
+  --header 'Content-Type: application/json'
+```
+
+For task cancellation you can use following curl request:
+```bash
+curl --location --request POST 'http://127.0.0.1:8000/tasks/{task_id}/cancel' \
+  --header 'Authorization: Token YOUR-TOKEN' \
+  --header 'Content-Type: application/json'
+```
+
 для того, что бы таски перезапускались надо прописывать это в таске

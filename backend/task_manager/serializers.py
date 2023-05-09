@@ -6,7 +6,7 @@ from django_celery_results.models import TaskResult
 
 
 class TasksListSerializer(serializers.ModelSerializer):
-    uuid = serializers.CharField(source="id")
+    uuid = serializers.CharField(source="task_id")
     name = serializers.CharField(source="task_name")
     created_at = serializers.CharField(source="date_created")
 

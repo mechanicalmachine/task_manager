@@ -1,3 +1,5 @@
+import json
+
 from django.core.validators import MinValueValidator
 from rest_framework import serializers
 from django_celery_results.models import TaskResult
@@ -16,10 +18,11 @@ class TasksListSerializer(serializers.ModelSerializer):
 class TaskRetrieveSerializer(serializers.ModelSerializer):
     uuid = serializers.CharField(source="task_id")
     status = serializers.SerializerMethodField()
+    errors = serializers.SerializerMethodField()
 
     class Meta:
         model = TaskResult
-        fields = ['uuid', 'status', "result", "traceback", "date_done"]
+        fields = ['uuid', 'status', "result", "date_done", "errors"]
 
     def get_status(self, obj: TaskResult) -> str:
         status_mapping = {
@@ -33,6 +36,9 @@ class TaskRetrieveSerializer(serializers.ModelSerializer):
         }
         return status_mapping.get(obj.status)
 
+    def get_errors(self, obj: TaskResult) -> list:
+        return json.loads(obj.meta)["errors"]
+
     def to_representation(self, instance: TaskResult):
         data = super().to_representation(instance)
 
@@ -41,7 +47,7 @@ class TaskRetrieveSerializer(serializers.ModelSerializer):
         if instance.status != "SUCCESS":
             data.pop("result")
         if instance.status not in ("FAILURE", "RETRY"):
-            data.pop("traceback")
+            data.pop("errors")
 
         return data
 

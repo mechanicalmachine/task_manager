@@ -48,4 +48,8 @@ curl --location --request POST 'http://127.0.0.1:8000/tasks/{task_id}/cancel' \
   --header 'Content-Type: application/json'
 ```
 
-для того, что бы таски перезапускались надо прописывать это в таске
+## Admin site
+
+You can find list of all task, detailed task information etc. in admin interface.
+
+You can also select few tasks and cancel them at the same time using admin actions.

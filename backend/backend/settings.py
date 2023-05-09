@@ -87,7 +87,7 @@ DATABASES = {
     }
 }
 
-CELERY_BROKER_URL = 'redis://localhost:6379/10'  # URL Redis
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'task_manager.result_backend.ExtendedTaskResultBackend'
 CELERY_TASK_TRACK_STARTED = True
 CELERY_RESULT_PERSISTENT = True

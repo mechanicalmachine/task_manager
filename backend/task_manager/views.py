@@ -27,6 +27,13 @@ class TaskViewSet(DestroyModelMixin, ListModelMixin, RetrieveModelMixin, CreateM
             queryset = queryset.filter(task_name=task_name)
         return queryset
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response({"task_id": instance.task_id}, status=status.HTTP_201_CREATED, headers=headers)
+
     def perform_create(self, serializer):
         data = serializer.data
         task_signature = signature(data.pop("name"))
@@ -36,6 +43,7 @@ class TaskViewSet(DestroyModelMixin, ListModelMixin, RetrieveModelMixin, CreateM
         )
         assign_perm("view_taskresult", self.request.user, instance)
         assign_perm("delete_taskresult", self.request.user, instance)
+        return instance
 
     def perform_destroy(self, instance):
         app.control.revoke(instance.task_id, terminate=True)
